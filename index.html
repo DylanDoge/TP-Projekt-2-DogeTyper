@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DogeTyper</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300&family=Oxygen:wght@300&family=PT+Sans&display=swap" rel="stylesheet">
+    <script src="js/script.js" defer></script>
+</head>
+<body>
+    <section id="wrapper">
+        <menu id="nav" class="decoration_none">
+            <li id="nav-container-1">
+                <img src="img/logo_dog_typing.jpg" alt="Picture of dog typing" id="logo">
+            </li>   
+            <li id="nav-container-2">
+                <a href="index.html" class="nav-decoration">HOME</a>
+            </li>
+            <li id="nav-container-3">
+                <a id="settings" class="nav-decoration">SETTINGS</a>
+            </li>
+            <li id="nav-container-4">
+                <a href="account.html" class="nav-decoration">ACCOUNT?</a>
+            </li>
+        </menu>
+        <section id="testSettings" class="hidden">
+            <section id="TestType">
+                <h2 class="title">TEST TYPE</h2>
+                <section class="horizontal">
+                    <button id="wordTest">words</button>
+                    <button id="quoteTest" class="selected">quote</button>
+                </section>
+            </section>
+            <section id="TestTime">
+                <h2 class="title">TIME</h2>
+                <section class="horizontal">
+                    <button id="15sec" class="hidden">15</button>
+                    <button id="30sec" class="hidden">30</button>
+                    <button id="60sec" class="hidden">60</button>
+                </section>
+            </section>
+        </section>
+        <main id="main">
+            <section id="container">
+                <section class="timer text" id="timer">0</section>
+                <div id="textonScreen" class="texton-Screen text"></div>
+                <textarea id="textInput" class="text-Input" spellcheck="false" autofocus></textarea>
+                <button type="button" id="reset" class="resetDesign" tabindex="0">Restart</button>
+            </section>
+            <section id="containerResult" class="hidden">
+                <h2 class="resultTitle">WPM</h2>
+                <h2 id="resultWPM"></h2>
+                <button type="button" id="newTest" class="newQuote" tabindex="0">Restart</button>
+            </section>
+        </main>
+        <footer id="footer">
+            <p>hund</p>
+        </footer>
+    </section>
+</body>
+</html>
