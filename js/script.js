@@ -1,4 +1,5 @@
-// The following code is based from this source: https://www.youtube.com/watch?v=R-7eQIHRszQ. But has been altered to my needs.
+// Grunden för koden är baserad från: https://www.youtube.com/watch?v=R-7eQIHRszQ. Men har programmerat många fler funktioner så att det är anpassad till mitt syfte och mål.
+// Globala variabler nedan
 const RANDOM_QUOTE_FROM_API = 'https://api.quotable.io/random'
 const quoteDisplay = document.getElementById('textonScreen')
 const quoteInput = document.getElementById('textInput')
@@ -17,18 +18,7 @@ let activationForTimer = false
 let finished = false
 let resetWhileActive = false
 
-resetTabbed.addEventListener('keydown', (key) => {
-    if (key.code == "Enter") {
-        quoteInput.focus();
-        if (timer.innerText == 0) {
-            QuoteRender()
-            console.log("hi12")
-        } else {
-            resetWhileActive = true
-        }
-    }
-})
-
+/* Event listeners används för att visa och dölja elementer i HTML genom att lägga till klasser*/
 SettingsButton.addEventListener('click', () => {
     settingsGrid.classList.toggle('settingsChanged')
     SettingsBox.classList.toggle('hidden')
@@ -50,18 +40,35 @@ quoteTest.addEventListener('click', () => {
     Test60s.classList.add('hidden')
 })
 
-resetTabbed.addEventListener('click', () => {
-    if (timer.innerText == 0) {
-        QuoteRender()
-        console.log("lo")
+resetTabbed.addEventListener('keydown', (key) => {
+    /* När en knapp på tangentbordet trycks på variabeln resetTabbed, så körs en funktion med den nedtryckta tangenten som argument med datatypen sträng.
+    En kontrollstruktur ser till så att den nedtryckta knappen stämmer och returnerar funktionen ResetTest*/
+    if (key.code == "Enter") {
+        return ResetTest()                     
     }
-    quoteInput.focus();
-    finished = true
 })
 
+resetTabbed.addEventListener('click', () => {
+    /* Om rutan reset som viariabel resetTabbed clickas på så kommer den returnera funktionen ResetTest*/
+    return ResetTest()                     
+})
 
-let correct = true
+function ResetTest() {
+    /*Byter tab-highlight från reset till skrivrutan (quoteInput).
+    En sista kontrollstuktur körs, om tiden har inte startat så returnerar den med en funktion som visar ny quote, annars kommer den starta om timern och byta text.*/ 
+    quoteInput.focus();
+    if (timer.innerText == 0) {
+        return QuoteRender()                                   
+    } else {
+        resetWhileActive = true
+    }
+}
+
+let correct = true      // Definierar global variabel som är en boolean för se om alla tecken skivs korrekt.
 quoteInput.addEventListener('input', () => {
+    /* Vid en tangent input i skriv-rutan kommer den starta stopptur och jämföra om tecken som skrevs är samma tecken som den i quote display.
+    Om tecken stämmer så kommer den korresponderande tecknet bli grönt i quote display. När den har gått igenom alla tecken så kommer den
+    ändra bolean på en global variabel som avslutar stopptur. */
     const arrayQuote = quoteDisplay.querySelectorAll('letter')
     const arrayValue = quoteInput.value.split('')
     console.log(arrayQuote)
@@ -93,7 +100,7 @@ quoteInput.addEventListener('input', () => {
 })
 
 function getRandomQuote() {
-    //let rand = Math.floor(Math.random() * 4)
+    /* En funktion som använder Fetch API för att returnera quote strängen från en webbsida formaterad i JSON*/
     return fetch(RANDOM_QUOTE_FROM_API)
     .then(response => response.json())
     .then(data => data.content)
@@ -101,16 +108,15 @@ function getRandomQuote() {
 
 let wordCount = 0
 async function QuoteRender() {
+    /* funktionen väntar på en API hämtar quote som en sträng. Strängen kommer att delas upp till ord i en div som består av tecken.*/
     const quote = await getRandomQuote()
     saved_quote = quote
-    wordCount = saved_quote.replaceAll(' ', '').replaceAll('.', '')
+    wordCount = saved_quote.replaceAll(' ', '').replaceAll('.', '').replaceAll(';', '').replaceAll(',', '')
     wordCount = wordCount.length
     quoteDisplay.innerHTML = ''
-    // characterSpan.innerText = charater
     grouping = document.createElement('div')
     grouping.classList.add('word')
     quoteDisplay.appendChild(grouping)
-    // grouping.style.transition = "all 0.4s ease"
     
     quote.split('').forEach(charater => {
         if (charater == ' ') {
@@ -128,27 +134,17 @@ async function QuoteRender() {
     })
     quoteInput.value = null 
 }
+
 let startTime
-function startTimer(){
+function startTimer() {
+    /*En stopptur som startar när en tangent trycks ner och sedan börjar köra om tills att den blir stoppad av reset knappen 
+    eller när testen är slutförd som då kommer att returnera till en funktion med tiden som argument som är av datatypen integer*/
     timer.innerText = 0   
-    startTime = new Date() 
+    startTime = new Date()
+
     const interval = setInterval(() => {
         timer.innerText = getTimerTime()
         latestTime = getTimerTime()
-        if (finished == true) {
-                clearInterval(interval);
-                timer.innerText = 0
-                finished = false
-                activationForTimer = false
-                console.log(latestTime)
-                console.log(correct)
-                if (correct == true) {
-                    showResults(latestTime)
-                    console.log("yes")
-                } else {
-                    QuoteRender()
-                }
-            }
         if (resetWhileActive == true) {
             clearInterval(interval);
             timer.innerText = 0
@@ -156,35 +152,48 @@ function startTimer(){
             QuoteRender()
             resetWhileActive = false
         }
+        if (finished == true) {
+                clearInterval(interval);
+                timer.innerText = 0
+                finished = false
+                activationForTimer = false
+
+                if (correct == true) {
+                    showResults(latestTime)
+                } else {
+                    QuoteRender()
+                }
+            }
         }, 100);
     }
 
 function getTimerTime() {
+    // Funktion som returnerar tiden som har gått sedan en tangent har trycks ner.
     return Math.floor((new Date() - startTime) / 1000)
 }
 
 function showResults(time) {
+    /* funkionen tar tiden som argument av datatypen: integer och kommer att gömma skriv rutan och visa upp resultaten.
+    WPM (Words Per Minute) kommer att beräknas och visas upp i resultat rutan. 
+    När restart knappen trycks så startar den om och gömmer resultat.*/
     let container = document.getElementById("container")
     container.classList.add("hidden")
-    //let mainContainer = document.getElementById("main")
-    let containerResult = document.getElementById("containerResult")
     let resultWPM = document.getElementById('resultWPM')
     let restartTest = document.getElementById('newTest')
+    let containerResult = document.getElementById("containerResult")
     containerResult.classList.remove("hidden")
+    
     WPM = Math.floor((wordCount/4.0)/(time/60.0))
     resultWPM.innerText = WPM
+
     restartTest.addEventListener('click', () => {
         containerResult.classList.add("hidden")
         container.classList.remove('hidden')
-        QuoteRender()
+        return QuoteRender()
     })
+
 }
+//known bugs: For example, "ff" becomes one character due to ligature and validates both if u type in only one "f".
+// while reseting the test with enter, will cause the test to start because the input is activated.
 
-// Settings tab that works as a popup element that is hidden, which will be visible. 15s, 30s, 60s. Random Quotes and Dolan Quotes.
-//Game setting 60s ->, if everything is correct => give result (WPM Words per minute, count in 60seconds (character/4)
-// Leaderboard PHP->MySQL to save?
-
-//known bugs: "becomes" one character and validates if u type in one "f", pressing restart three time in a row makes it auto start the test.
-
-QuoteRender()
-
+QuoteRender()           // Köra funktionen som visar meningen som skall skrivas.
